@@ -38,7 +38,7 @@ module tb_unit;
  flight_game game(clk,rst_n,game_frame,game_link,dx,dy,direction,fire,press,game_restart,px,ex,bx,py,ey,by,bullet,cannon,score,over);
  task tick;begin game_frame=1;cycles(1);game_frame=0;cycles(1);end endtask
  task game_reset;begin game_restart=1;tick();game_restart=0;end endtask
- reg[57:0] saved;integer i,j,n;reg[6:0] initial_y;
+ reg[57:0] saved;integer i,j,n,last_shot,shots;reg[6:0] initial_y;
  initial begin
   reset_all();
   // Start glitches shorter than half a bit are ignored; back-to-back bytes preserved.
@@ -79,12 +79,23 @@ module tb_unit;
    fire=1;tick();fire=0;initial_y=by;check(bullet,"physical fire did not create projectile");
    direction=2;tick();
    case(j) 0:check(by==initial_y-2,"bullet dir0");1:check(by==initial_y-1,"bullet dir1");2:check(by==initial_y,"bullet dir2");3:check(by==initial_y+1,"bullet dir3");4:check(by==initial_y+2,"bullet dir4");endcase
+   game_link=0;saved={px,ex,bx,py,ey,by,bullet,cannon,score,over};repeat(3)tick();
+   check(saved=={px,ex,bx,py,ey,by,bullet,cannon,score,over},"active projectile moved during disconnect");game_link=1;
    game.bullet_active=0;fire=1;tick();check(!bullet,"fire cooldown too short");fire=0;
   end
+  game_reset();fire=1;last_shot=-6;shots=0;
+  for(i=0;i<21;i=i+1)begin
+   // Free the slot to isolate the cadence limiter from projectile lifetime.
+   game.bullet_active=0;tick();
+   if(bullet)begin check(i-last_shot>=6,"held-fire cadence faster than six frames");last_shot=i;shots=shots+1;end
+  end
+  check(shots==4,"held-fire cadence not six frames");fire=0;
   game_reset();direction=2;dy=-3;repeat(10)tick();dy=0;fire=1;tick();fire=0;
   n=0;while(score==0 && n<60)begin tick();n=n+1;end
   check(score==1 && !over,"natural projectile hit and score");
+  repeat(3)tick();check(score==1,"one hit scored more than once");
   // Boundary cases preload state in the isolated unit DUT; no synthesis/test hooks in RTL.
+  game.score_bcd=8'h09;game.bullet_active=1;game.bullet_x=ex;game.bullet_y=ey;tick();check(score==8'h10,"BCD09 to10 carry");
   game.score_bcd=8'h98;game.bullet_active=1;game.bullet_x=ex;game.bullet_y=ey;tick();check(score==8'h99,"score99 boundary");
   game.bullet_active=1;game.bullet_x=ex;game.bullet_y=ey;tick();check(score==8'h99,"score overflow");
   game_reset();dy=-3;repeat(10)tick();dy=0;n=0;

@@ -38,7 +38,7 @@ def movement(value):
 
 def parse_record(line):
     obj = json.loads(line)
-    if (obj.get('v') != 1 or not isinstance(obj.get('session'), str) or not obj['session']
+    if (not isinstance(obj, dict) or obj.get('v') != 1 or not isinstance(obj.get('session'), str) or not obj['session']
             or type(obj.get('seq')) is not int or obj['seq'] < 0
             or obj.get('sensor') not in ('accelerometer', 'gyroscope')
             or not isinstance(obj.get('t_ns'), str) or not obj['t_ns'].isdigit()):
@@ -128,6 +128,7 @@ def replay(lines):
         try:
             session, _, _, stamp, _ = parse_record(line)
             if session != previous_session:
+                controls = Controls()  # Never expose previous-session controls at a new epoch.
                 next_tick = stamp
                 previous_session = session
             while next_tick < stamp:

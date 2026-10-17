@@ -1,0 +1,5 @@
+Vendored Tiny Tapeout FPGA bitstream composite action.
+Source: https://github.com/TinyTapeout/tt-gds-action/blob/395eedb3eeec3c2f4961c3b04ff2cf87f5525636/fpga/ice40up5k/action.yml
+Copyright Tiny Tapeout contributors. Apache License 2.0.
+Modification: pass the workflow GitHub token to the YosysHQ CAD-suite setup action
+for authenticated release lookup. Original build commands and artifact upload remain.

@@ -60,7 +60,7 @@ class BridgeTests(unittest.TestCase):
         self.assertIsNone(c.neutral)
 
     def test_bad_json_and_nonfinite(self):
-        for line in ('{}', 'garbage', record(0, 'gyro', 0), record(0, 'gyroscope', 0, x=float('nan'))):
+        for line in ('[]', 'null', '1', '"text"', '{}', 'garbage', record(0, 'gyro', 0), record(0, 'gyroscope', 0, x=float('nan'))):
             self.assertRaises((ValueError, KeyError), parse_record, line)
 
     def test_replay_deterministic_and_crc(self):
@@ -71,6 +71,19 @@ class BridgeTests(unittest.TestCase):
         self.assertTrue(any(frame[6] == 1 for frame in frames))
         self.assertEqual(frames[-1][6], 0)
         self.assertTrue(all(len(f) == 8 and crc8(f[2:7]) == f[7] for f in frames))
+
+    def test_replay_session_reset_never_reuses_old_controls(self):
+        lines = [record(n * 2 + i, sensor, n * 20_000_000,
+                        z=9.8 if i == 0 else 0)
+                 for n in range(70) for i, sensor in enumerate(('accelerometer', 'gyroscope'))]
+        before = list(replay(lines))
+        # New session starts at an unrelated, later monotonic timestamp. First
+        # packet must be invalid until both new sensors have calibrated.
+        lines += [record(0, 'accelerometer', 10_000_000_000, z=9.8, session='new'),
+                  record(1, 'gyroscope', 10_040_000_000, session='new')]
+        after = list(replay(lines))
+        self.assertEqual(after[len(before)-1][6], 0)
+        self.assertTrue(all(frame[6] == 0 for frame in after[len(before)-1:]))
 
     def test_live_partial_reads_stale_and_disconnect(self):
         listener = socket.socket()

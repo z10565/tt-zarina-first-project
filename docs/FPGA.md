@@ -8,6 +8,8 @@ The [official simulator guide](https://tinytapeout.com/guides/fpga-breakout/) di
 
 Every push now runs the official FPGA action. Download `fpga_bitstream` from the final tested SHA. Programming file: `build/tt_um_zarina_phone_flight.bin`. Inspect included Yosys/nextpnr logs for utilization and timing. `TT_FPGA_FREQ=25.2` checks the intended frequency instead of the tool's default 12 MHz. Generation alone does not verify hardware.
 
+The action is vendored at `.github/actions/fpga/` from official revision `395eedb3eeec3c2f4961c3b04ff2cf87f5525636`, with its license and attribution. Its sole functional change supplies the automatic workflow token to `setup-oss-cad-suite` for authenticated release lookup. The first FPGA run failed at an unauthenticated GitHub API rate limit before synthesis; this change fixes the download cause without weakening frequency or build checks.
+
 Equivalent local commands, with OSS CAD Suite activated:
 
 ```sh
@@ -19,6 +21,8 @@ TT_FPGA_FREQ=25.2 python tt/tt_fpga.py harden --breakout-target fabricfox
 ```
 
 The official wrapper uses the external project clock directly, with no PLL or oscillator. Request 25.2 MHz on the ETR; SDK PWM can approximate it. The relay prints the reported actual rate and refuses errors above 0.5%. Measure it where possible and check monitor lock/UART reliability. Do not retain a 12 or 50 MHz default.
+
+SDK API inspection at firmware revision `d485c7a9986336024e35d790568fca33be1c5665` confirms `clock_project_PWM` returns its PWM object at this positive frequency and `auto_clocking_freq` reports its configured frequency. Thus the relay's return-object guard matches that SDK implementation; compatibility with the installed board firmware still needs testing.
 
 ## Load and preserve the board
 

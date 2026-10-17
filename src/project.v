@@ -33,8 +33,10 @@ module tt_um_zarina_phone_flight (
         if (!run_reset_n) begin fire_pending <= 0; restart_pending <= 0; end
         else begin
             if (frame_tick || !link_valid) begin fire_pending <= 0; restart_pending <= 0; end
-            if (fire_press && link_valid) fire_pending <= 1;
-            if (restart) restart_pending <= 1;
+            else begin
+                if (fire_press) fire_pending <= 1;
+                if (restart) restart_pending <= 1;
+            end
         end
     end
     wire [7:0] player_x, enemy_x, bullet_x, score_bcd;
@@ -43,7 +45,7 @@ module tt_um_zarina_phone_flight (
     wire [2:0] cannon_dir;
     flight_game game (.clk(clk),.rst_n(run_reset_n),.frame_tick(frame_tick),.link_valid(link_valid),
         .move_x(move_x),.move_y(move_y),.aim(aim),.fire_level(fire_level),
-        .fire_press(fire_pending || fire_press),.restart(restart_pending || restart),
+        .fire_press(fire_pending || fire_press),.restart((restart_pending || restart) && link_valid),
         .player_x(player_x),.player_y(player_y),.enemy_x(enemy_x),.enemy_y(enemy_y),
         .bullet_x(bullet_x),.bullet_y(bullet_y),.bullet_active(bullet_active),
         .cannon_dir(cannon_dir),.score_bcd(score_bcd),.game_over(game_over));

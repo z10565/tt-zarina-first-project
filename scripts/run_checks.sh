@@ -7,6 +7,8 @@ iverilog -g2012 -s tb_unit -o test/output/unit.vvp "${sources[@]}" test/tb_unit.
 vvp test/output/unit.vvp
 iverilog -g2012 -s tb_vga -o test/output/vga.vvp src/vga_timing.v test/tb_vga.v
 vvp test/output/vga.vvp
+iverilog -g2012 -s tb_integration -o test/output/integration.vvp "${sources[@]}" test/tb_integration.v
+vvp test/output/integration.vvp
 python3 scripts/check_metadata.py
 python3 scripts/check_replay.py
 iverilog -g2012 -s tb_render -o test/output/render.vvp src/flight_game.v src/pixel_renderer.v test/tb_render.v

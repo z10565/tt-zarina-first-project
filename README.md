@@ -23,6 +23,8 @@ Physical button -> ui0
 
 No USB/radio stack exists in silicon. VGA uses every dedicated output. All bidirectional outputs remain disabled.
 
+Updated phone software: [RTU Motion v0.2.0](https://github.com/Emre-22/rtu-motion-controller/releases/tag/v0.2.0), source revision `537a7fa` on `feat/flight-bridge` (private repository; sign in with access). The chip-side host bridge and deterministic replay are in this repository.
+
 ## Run locally
 
 Linux/WSL, Python3.11, Icarus, Verilator, Yosys and Make:
