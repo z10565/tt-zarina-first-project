@@ -23,6 +23,8 @@ Its final physical metrics: die area 36,347.4 µm², core area 34,255.4 µm², s
 
 The original FPGA tool download failed before synthesis on an unauthenticated API rate limit. The attributed local copy of the official action adds the automatic workflow token for that lookup while preserving build commands and the 25.2 MHz timing requirement. This is distinct from passing FPGA synthesis/place-and-route.
 
+Revision `dd78e0b087b24be4dcbacb3c2fe41d3aaada4647` subsequently passed [real FPGA synthesis/place-and-route](https://github.com/z10565/tt-zarina-first-project/actions/runs/39055011028): 1,349/5,280 ICESTORM logic cells (25%), no RAM or DSP, post-route maximum frequency 25.37 MHz, passing the 25.20 MHz requirement. It generated a 104,090-byte bitstream. Final release evidence must still match its final commit, not assume these older results apply automatically.
+
 ## Pending
 
 The final release is conditional on official RTL/cocotb, gate-level, GDS, precheck, docs and FPGA jobs actually passing on its same final SHA; check release evidence rather than inferring success from one job. Actual hardware needs an attached ETR, confirmed simulator/firmware, measured clock/voltages, VGA lock and S21 FE tests. Organizers must confirm the event shuttle and entitlement before final submission.

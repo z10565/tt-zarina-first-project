@@ -4,9 +4,13 @@ Coordinator: /root, branch `feat/phone-flight-game`. All edits are isolated from
 
 | Work | Owner | Write paths | Status |
 | --- | --- | --- | --- |
-| Interface, integration, UART/parser/button/VGA, tests, docs | /root | src/project.v, src/uart_rx.v, src/control_packet.v, src/fire_button.v, src/vga_timing.v, test/, scripts/, docs/ except PLATFORM.md, README.md, WORKPLAN.md, AGENTS.md, .gitignore | active |
-| Bounded game and pixel renderer | game-worker | src/flight_game.v, src/pixel_renderer.v | assigned |
-| Phone live transport + PC preprocessing/serial/replay | bridge-worker | bridge/, ../usb c accelerometer/app/; app docs only by root | assigned |
-| Official SKY migration / CI / platform evidence | platform-worker | .github/, .devcontainer/, info.yaml, src/config.json, docs/PLATFORM.md, NOTICE | assigned |
+| Interface, UART/parser/button/VGA, integration tests | Unassigned | None | Implemented and integrated; local checks pass; final CI tracked in release |
+| Bounded game and pixel renderer | Unassigned | None | Implemented, tested and reviewed; worker released ownership |
+| Phone live transport + PC preprocessing/serial/replay | Unassigned | None | Implemented; Android branch feat/flight-bridge at 537a7fa; workers released ownership |
+| Official SKY migration / CI / platform evidence | Unassigned | None | Migrated and integrated; worker released ownership |
+| Physical FPGA/phone/VGA bring-up | Unassigned | None | Awaiting attached hardware and revision/firmware identification; follow docs/FPGA.md |
+| Organizer shuttle and footprint confirmation | Unassigned | None | Required before manufacturing submission |
 
 Worker handoff: changed paths, behavior, tests run/results, unrun checks, blockers, next action. No takeover until prior owner stops. Independent phone and physical-board validation remain pending until a device is connected.
+
+Implementation workers have finished; no worker retains a write claim. A future coordinating session should assign fresh, disjoint paths before editing. This ledger is not an atomic lock across independent sessions.
