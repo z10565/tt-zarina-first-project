@@ -9,3 +9,10 @@ test/sim_build
 test/__pycache__/
 test/results.xml
 test/gate_level_netlist.v
+test/output/
+bridge/__pycache__/
+bridge/tests/__pycache__/
+.venv/
+**/__pycache__/
+*.pyc
+test/tb.fst

@@ -5,7 +5,7 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = project.v
+PROJECT_SOURCES = project.v uart_rx.v control_packet.v fire_button.v vga_timing.v flight_game.v pixel_renderer.v
 
 ifneq ($(GATES),yes)
 
@@ -32,6 +32,7 @@ endif
 
 # Allow sharing configuration between design and testbench via `include`:
 COMPILE_ARGS 		+= -I$(SRC_DIR)
+COMPILE_ARGS += -g2012
 
 # Include the testbench sources:
 VERILOG_SOURCES += $(PWD)/tb.v

@@ -1,39 +1,45 @@
-![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/wokwi_test/badge.svg) ![](../../workflows/fpga/badge.svg)
+# Phone Flight — RTU Chipathon
 
-# Tiny Tapeout Wokwi Project Template
+Synthesizable Tiny Tapeout flight/shooting game: phone tilt flies the plane, rotation aims a five-direction cannon, and a separate physical button fires. Procedural VGA graphics, one enemy/projectile, score, collisions, game over and restart.
 
-- [Read the documentation for project](docs/info.md)
+The same RTL targets the **ETR FPGA ASIC simulator first**, and SKY130 Tiny Tapeout later. The existing TT.RUN.09 ASIC is not reprogrammable. Selected standard footprint: **1x2 = two tiles**, within the three-tile budget. The matching template lists no three-tile shape; `3x2` would be six tiles. Organizer confirmation remains required before submission.
 
-## What is Tiny Tapeout?
+## Start here
 
-Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital and analog designs manufactured on a real chip.
+- [Interface/game specification](docs/INTERFACE.md)
+- [FPGA build, upload and onboard USB relay](docs/FPGA.md)
+- [Protocol, controls and PC bridge](bridge/README.md)
+- [Wiring and voltages](docs/WIRING.md)
+- [Process/template evidence](docs/PLATFORM.md)
+- [Verification and blockers](docs/VERIFICATION.md)
+- [Tiny Tapeout datasheet](docs/info.md)
 
-To learn more and get started, visit https://tinytapeout.com.
+```text
+Phone app raw JSONL -> USB ADB forwarding -> PC calibration/filtering
+ -> CRC-protected UART packets -> ETR USB CDC/UART relay -> ui3
+ -> game RTL -> Tiny VGA OUTPUT PMOD -> monitor
+Physical button -> ui0
+```
 
-## Wokwi Projects
+No USB/radio stack exists in silicon. VGA uses every dedicated output. All bidirectional outputs remain disabled.
 
-Edit the [info.yaml](info.yaml) and change the `wokwi_id` to the ID of your Wokwi project. You can find the ID in the URL of your project, it's the big number after `wokwi.com/projects/`.
+## Run locally
 
-The GitHub action will automatically fetch the digital netlist from Wokwi and build the ASIC files.
+Linux/WSL, Python3.11, Icarus, Verilator, Yosys and Make:
 
-## Enable GitHub actions to build the results page
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -r test/requirements.txt
+python -m unittest discover -s bridge/tests -v
+python -m unittest discover -s fpga -p 'test*.py' -v
+bash scripts/run_checks.sh
+make -C test
+python -m cocotb_tools.check_results test/results.xml
+```
 
-- [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
+The checks generate five RTL preview PNGs under `test/output/` and replay captured app packets through UART/parser RTL. Official SKY workflows retain gate-level, GDS/precheck, documentation and FPGA builds. Layout success alone does not prove gameplay.
 
-## Resources
+No shared shuttle assembly or another team's design is edited. Work stays on an isolated branch. Passing workflows prepare artifacts; they do not perform manufacturing submission, payment or legal acceptance.
 
-- [FAQ](https://tinytapeout.com/faq/)
-- [Digital design lessons](https://tinytapeout.com/digital_design/)
-- [Learn how semiconductors work](https://tinytapeout.com/siliwiz/)
-- [Join the community](https://tinytapeout.com/discord)
-- [Build your design locally](https://www.tinytapeout.com/guides/local-hardening/)
-
-## What next?
-
-- [Submit your design to the next shuttle](https://app.tinytapeout.com/).
-- Edit [this README](README.md) and explain your design, how it works, and how to test it.
-- Share your project on your social network of choice:
-  - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
-  - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
-  - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@tinytapeout](https://twitter.com/tinytapeout)
-  - Bluesky [@tinytapeout.com](https://bsky.app/profile/tinytapeout.com)
+Original Apache-2.0 [LICENSE](LICENSE) retained; see [NOTICE](NOTICE).

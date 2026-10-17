@@ -1,40 +1,38 @@
-# Tiny Tapeout project information (Wokwi project)
+# Migrated from TinyTapeout/ttsky-verilog-template; see NOTICE and docs/PLATFORM.md.
 project:
-  wokwi_id: "478043216302798849" # Set this to the ID of your Wokwi project (the number from the project's URL)
-  title: "Zarina First Project Experiment" # Project title
-  author: "Zarina" # Your name
-  discord: "z10565" # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description: "Investigating gates" # One line description of what your project does
-  language: "Wokwi" # other examples include SystemVerilog, Amaranth, VHDL, etc
-  clock_hz: 0 # Clock frequency in Hz (or 0 if not applicable)
-
-  # How many tiles your design occupies? A single tile is about 167x108 uM.
-  tiles: "1x1" # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
-
-# The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
-# This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
+  title: "Phone Flight"
+  author: "Zarina and RTU Chipathon team"
+  discord: "z10565"
+  description: "Phone-controlled VGA flight game with UART controls and physical fire button"
+  language: "Verilog"
+  clock_hz: 25200000
+  tiles: "1x2"
+  top_module: "tt_um_zarina_phone_flight"
+  source_files:
+    - "project.v"
+    - "uart_rx.v"
+    - "control_packet.v"
+    - "fire_button.v"
+    - "vga_timing.v"
+    - "flight_game.v"
+    - "pixel_renderer.v"
 pinout:
-  # Inputs
-  ui[0]: ""
+  ui[0]: "FIRE (active high)"
   ui[1]: ""
   ui[2]: ""
-  ui[3]: ""
+  ui[3]: "UART RX (115200 8N1)"
   ui[4]: ""
   ui[5]: ""
   ui[6]: ""
   ui[7]: ""
-
-  # Outputs
-  uo[0]: ""
-  uo[1]: ""
-  uo[2]: ""
-  uo[3]: ""
-  uo[4]: ""
-  uo[5]: ""
-  uo[6]: ""
-  uo[7]: ""
-
-  # Bidirectional pins
+  uo[0]: "VGA R1"
+  uo[1]: "VGA G1"
+  uo[2]: "VGA B1"
+  uo[3]: "VGA VSYNC"
+  uo[4]: "VGA R0"
+  uo[5]: "VGA G0"
+  uo[6]: "VGA B0"
+  uo[7]: "VGA HSYNC"
   uio[0]: ""
   uio[1]: ""
   uio[2]: ""
@@ -43,6 +41,4 @@ pinout:
   uio[5]: ""
   uio[6]: ""
   uio[7]: ""
-
-# Do not change!
 yaml_version: 6
