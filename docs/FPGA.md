@@ -1,5 +1,26 @@
 # Test first on the ETR FPGA simulator
 
+## Static screen: isolate controls from VGA
+
+The independent [VGA self-test](https://github.com/Emre-22/rtu-vga-selftest) was reported animating on the mentor's board on 2026-10-18. This confirms animation for that test/setup, not successful phone transport. Phone Flight intentionally pauses enemies, flight and firing until valid UART controls arrive, and pauses again after a 250 ms timeout. Uploading the bitstream or copying Python files does not run a USB relay. Amber top-right lamp means no valid controls; cyan means live controls. Red center cross means game over.
+
+Simulation reproduces the original symptom: actual VGA frame ticks advance while enemy/player state remains at reset without packets. Valid packets resume updates without changing the bitstream. The temporary demo below generates ~30 controls/s on the ETR and sends them through hardware UART1 to the actual FPGA RX, without a phone. It sweeps vertical flight/aim and restarts every four seconds. Physical FIRE still shoots. This is synthetic input to the real RTL game, not a software renderer.
+
+From the mentor's existing `tt-fpga` directory, after the game image has uploaded successfully:
+
+```powershell
+git -C projects/tt-zarina-first-project fetch origin fix/board-bringup-diagnostics
+git -C projects/tt-zarina-first-project switch --track origin/fix/board-bringup-diagnostics
+mpremote connect COM3 fs cp projects/tt-zarina-first-project/fpga/board_bridge.py :board_bridge.py
+mpremote connect COM3 run projects/tt-zarina-first-project/fpga/board_demo.py
+```
+
+If already on that branch, use `git -C projects/tt-zarina-first-project pull --ff-only` instead of `switch --track`. Preserve any mentor edits; never force checkout. COM3 is an example. Keep the laptop connected and phone disconnected; the last command stays running. Ctrl-C stops the demo and holds the game in reset. No main.py/config.ini or autostart is installed. The copied board_bridge.py replaces only our previous helper; back it up first if the mentor modified it.
+
+Expect `RTU DEMO` with reported clock, a cyan lamp and moving planes. If it still fails, retain the full console output and note lamp color. A moving demo proves the game clock/reset, UART wiring and packet acceptance in this setup; it does not prove Android USB connectivity. Next, stop the demo, run the explicit standalone startup/handshake procedure in STANDALONE.md and test the app. The temporary relay now initializes SDK detection when raw REPL skipped main.py, without re-probing an already initialized SDK.
+
+If the earlier phone autostart prevents maintenance access, use the documented FIRE startup bypass and `rtu-standalone.disabled` marker from STANDALONE.md. Do not erase board firmware. This test has not yet been observed on physical hardware.
+
 For phone-only play after one-time PC setup, use [standalone USB setup](STANDALONE.md). The procedure below describes the retained PC/ADB alternative.
 
 Photos identify two different systems: the white TinyTapeout06+ demoboard carries an existing TT.RUN.09 ASIC, which cannot receive our new logic; the purple ETR demoboard with FPGA ASIC simulator is the FPGA target. Tiny VGA v1.2 and the AOC VGA monitor provide the display. Audio PMOD is unused. Confirm the FPGA daughterboard revision and firmware before programming: these are visual identifications, not electrical validation.

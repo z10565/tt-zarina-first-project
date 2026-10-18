@@ -11,6 +11,7 @@ iverilog -g2012 -s tb_integration -o test/output/integration.vvp "${sources[@]}"
 vvp test/output/integration.vvp
 python3 scripts/check_metadata.py
 python3 scripts/check_replay.py
+python3 scripts/check_board_demo.py
 iverilog -g2012 -s tb_render -o test/output/render.vvp src/flight_game.v src/pixel_renderer.v test/tb_render.v
 vvp test/output/render.vvp
 python3 scripts/render_frames.py

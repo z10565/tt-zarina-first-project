@@ -1,9 +1,10 @@
 import importlib.util
 import io
+import sys
 from pathlib import Path
 import unittest
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 spec = importlib.util.spec_from_file_location("board_bridge", Path(__file__).with_name("board_bridge.py"))
 bridge = importlib.util.module_from_spec(spec)
@@ -11,6 +12,25 @@ spec.loader.exec_module(bridge)
 
 
 class BoardBridgeTests(unittest.TestCase):
+    def test_raw_repl_initializes_but_existing_sdk_is_not_reprobed(self):
+        detect = SimpleNamespace(PCB=0, probe=Mock(return_value=True))
+        demo = SimpleNamespace(get=Mock(return_value=object()))
+        modules = {
+            "ttboard.boot.demoboard_detect": SimpleNamespace(
+                DemoboardDetect=detect, DemoboardVersion=SimpleNamespace(UNKNOWN=0)),
+            "ttboard.demoboard": SimpleNamespace(DemoBoard=demo),
+        }
+        with patch.dict(sys.modules, modules):
+            self.assertIs(bridge.get_board(), demo.get.return_value)
+            detect.probe.assert_called_once()
+            detect.PCB = 3
+            bridge.get_board()
+            detect.probe.assert_called_once()
+            detect.PCB = 0
+            detect.probe.return_value = False
+            with self.assertRaises(RuntimeError):
+                bridge.get_board()
+
     def fixture(self):
         pins = SimpleNamespace(ui_in3=SimpleNamespace(gpio_num=20),
                                ui_in4=SimpleNamespace(gpio_num=21),

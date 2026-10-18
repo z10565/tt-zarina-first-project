@@ -19,13 +19,17 @@ module tb_integration;
  end endtask
  reg[7:0] saved_x;reg[6:0]saved_y;
  initial begin
-  cycles(4);rst_n=1;cycles(4);packet(1,1);
+  cycles(4);rst_n=1;cycles(4);
+  saved_x=dut.enemy_x;next_frame();next_frame();
+  if(dut.enemy_x!=saved_x || dut.link_valid)$fatal(1,"no-input safety pause violated");
+  $display("REPRO: VGA frame ticks run, but no UART packets => game intentionally paused");
+  packet(1,1);
   if(!dut.link_valid)$fatal(1,"top UART control link");
   dut.game.game_over=1;
   packet(2,3);
   if(!dut.restart_pending || !dut.game_over)$fatal(1,"restart pulse not retained between frames");
   next_frame();if(dut.game_over || dut.player_x!=24 || dut.restart_pending)$fatal(1,"packet restart not applied atomically");
-  next_frame();if(dut.player_x!=25)$fatal(1,"packet restart repeated or frame movement absent");
+  next_frame();if(dut.player_x!=25 || dut.enemy_x!=151)$fatal(1,"packet restart repeated or frame movement absent");
   dut.game.game_over=1;ui[0]=1;cycles(126010);
   if(!dut.fire_pending || !dut.fire_level)$fatal(1,"top physical debounce/event pending");
   next_frame();if(dut.game_over || dut.player_x!=24)$fatal(1,"physical restart lost");
@@ -39,3 +43,4 @@ module tb_integration;
  end
  initial begin #100000000;$fatal(1,"integration timeout");end
 endmodule
+

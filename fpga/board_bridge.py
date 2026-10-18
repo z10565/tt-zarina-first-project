@@ -184,16 +184,25 @@ def relay(source, uart):
             return
 
 
+def get_board():
+    """Initialize SDK when raw REPL skipped main.py; preserve an existing SDK."""
+    from ttboard.boot.demoboard_detect import DemoboardDetect, DemoboardVersion
+    from ttboard.demoboard import DemoBoard
+    if DemoboardDetect.PCB == DemoboardVersion.UNKNOWN:
+        if not DemoboardDetect.probe():
+            raise RuntimeError("No supported ETR carrier detected")
+    return DemoBoard.get()
+
+
 def main(require_handshake=False):
     import machine
     import micropython
     import sys
     import select
     import time
-    from ttboard.demoboard import DemoBoard
     from ttboard.mode import RPMode
 
-    tt = DemoBoard.get()
+    tt = get_board()
     uart = None
     try:
         uart, actual = configure(tt, machine, RPMode.ASIC_MANUAL_INPUTS)

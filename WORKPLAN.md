@@ -1,6 +1,6 @@
 # Work and ownership
 
-Coordinator: /root, branch `feat/standalone-usb`, based on verified `feat/phone-flight-game`. All edits are isolated from main. Workers request ownership changes before overlapping paths; only root runs Git mutations and updates this table/specs.
+Coordinator: /root, branch `fix/board-bringup-diagnostics`, based on verified `feat/phone-flight-game`. All edits are isolated from main. Workers request ownership changes before overlapping paths; only root runs Git mutations and updates this table/specs.
 
 | Work | Owner | Write paths | Status |
 | --- | --- | --- | --- |
@@ -16,3 +16,11 @@ Coordinator: /root, branch `feat/standalone-usb`, based on verified `feat/phone-
 Worker handoff: changed paths, behavior, tests run/results, unrun checks, blockers, next action. No takeover until prior owner stops. Independent phone and physical-board validation remain pending until a device is connected.
 
 Implementation workers have finished; no worker retains a write claim. A future coordinating session should assign fresh, disjoint paths before editing. This ledger is not an atomic lock across independent sessions.
+
+## Active bring-up assignment (2026-10-18 UTC)
+
+/root owns fpga/, test/tb_integration.v, test/tb_replay.v, scripts/check_board_demo.py, scripts/run_checks.sh, docs/FPGA.md and WORKPLAN.md. Reproduce no-input static screen, add temporary deterministic UART demo, and verify SDK startup. Existing RTL/protocol/shuttle settings stay fixed. No workers assigned.
+
+
+Local evidence: no-packet motion expectation reproduced static state while real VGA ticks advance; valid packets resume enemy/player movement in top-level simulation. 21 board helper tests pass. Board demo physical test pending; user confirmed independent self-test animation only.
+

@@ -24,6 +24,6 @@ module tb_replay;
    if(link && (mx!==memory[i*8+3][3:0] || my!==memory[i*8+4][3:0]))$fatal(1,"replay signed controls mismatch %d",i);
    if(!link && (mx!=0 || my!=0))$fatal(1,"invalid packet movement %d",i);
   end
-  $display("PASS: %d captured-app UART packets through receiver+parser, divider %d",PACKET_COUNT,BIT_CYCLES);$finish;
+  $display("PASS: %d control UART packets through receiver+parser, divider %d",PACKET_COUNT,BIT_CYCLES);$finish;
  end
 endmodule
