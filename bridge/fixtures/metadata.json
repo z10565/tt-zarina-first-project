@@ -1,0 +1,37 @@
+{
+  "v": 1,
+  "session": "f9944ea2-d84b-41cf-b038-178ea969f7e6",
+  "app_version": "0.1.0",
+  "exported_at": "2026-10-17T16:41:42.602876Z",
+  "device": "Google sdk_gphone64_x86_64",
+  "android_version": "16",
+  "requested_hz_per_sensor": 50,
+  "sample_count": 1233,
+  "retained_count": 1233,
+  "dropped_count": 0,
+  "invalid_count": 0,
+  "timestamp_base": "Android SensorEvent monotonic nanoseconds; not wall clock",
+  "coordinate_frame": "Android device natural orientation",
+  "units": {
+    "accelerometer": "m\/s^2 including gravity",
+    "gyroscope": "rad\/s"
+  },
+  "sensors": [
+    {
+      "type": 1,
+      "name": "Goldfish 3-axis Accelerometer",
+      "available": true,
+      "sample_count": 617,
+      "observed_average_hz": 50,
+      "error": null
+    },
+    {
+      "type": 4,
+      "name": "Goldfish 3-axis Gyroscope",
+      "available": true,
+      "sample_count": 616,
+      "observed_average_hz": 50,
+      "error": null
+    }
+  ]
+}

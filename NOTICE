@@ -1,0 +1,9 @@
+Phone Flight incorporates the Tiny Tapeout SKY Verilog project template:
+https://github.com/TinyTapeout/ttsky-verilog-template
+Template revision a42e6662fab316e93b4e26399e21d41664a460b7.
+The original Zarina Wokwi project and its attribution are retained in Git history.
+The project's Apache License 2.0 in LICENSE is unchanged.
+
+Modified for RTU Chipathon: Verilog game metadata, source list, clock constraint,
+functional checks and project documentation. Official process-specific layout,
+precheck, documentation and optional FPGA actions remain in use.

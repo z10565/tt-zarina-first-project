@@ -1,19 +1,21 @@
 name: fpga
-
 on:
   push:
-    # Comment out (or remove) the following line to run the FPGA workflow on every push:
-    branches: none
   workflow_dispatch:
-
 jobs:
   fpga:
     runs-on: ubuntu-24.04
+    env:
+      # tt_fpga.py otherwise defaults nextpnr to 12 MHz; match the real external clock.
+      TT_FPGA_FREQ: "25.2"
     steps:
-      - name: checkout repo
+      - name: Checkout repo
         uses: actions/checkout@v6
         with:
           submodules: recursive
-
-      - name: FPGA bitstream for TT ASIC Sim (ICE40UP5K)
-        uses: TinyTapeout/tt-gds-action/fpga/ice40up5k@ttsky26d
+      - name: Board relay setup contract tests
+        run: python -m unittest discover -s fpga -p 'test*.py' -v
+      - name: FPGA bitstream for ETR ASIC simulator (ICE40UP5K FabricFox v2)
+        uses: ./.github/actions/fpga
+        with:
+          tools-ref: 01d5d2814fa9dd61e9d211e0b235a4a592a9316a
