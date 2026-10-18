@@ -36,6 +36,25 @@ def install():
     return "Installed; cold reset to start. Hold physical FIRE during startup to bypass."
 
 
+def enable():
+    """Install once or re-enable an exact, verified existing RTU hook."""
+    import os
+    with open(MAIN, "rb") as source:
+        current = source.read(65537)
+    if HOOK in current:
+        with open(BACKUP, "rb") as source:
+            original = source.read(65537)
+        if len(current) > 65536 or len(original) > 65536 or current != original + HOOK:
+            raise RuntimeError("Startup differs from saved backup + RTU hook; inspect manually")
+        with open(ENABLED, "wb") as target:
+            target.write(b"1\n")
+    else:
+        install()  # Retains all original refusal/backup protections.
+    if exists(DISABLED):
+        os.remove(DISABLED)
+    return "Phone relay enabled. Disconnect laptop, then power board from phone."
+
+
 def uninstall():
     """Restore exact previous main.py, leaving backup for inspection."""
     import os

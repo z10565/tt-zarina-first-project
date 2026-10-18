@@ -56,6 +56,33 @@ class StandaloneTests(unittest.TestCase):
         Path(startup.DISABLED).write_bytes(b"")
         self.assertFalse(startup.start())
 
+    def test_enable_installs_once_and_reenables_verified_hook(self):
+        Path(startup.DISABLED).write_bytes(b"")
+        startup.enable()
+        expected = self.original + startup.HOOK
+        self.assertEqual(Path("main.py").read_bytes(), expected)
+        self.assertFalse(Path(startup.DISABLED).exists())
+        Path(startup.DISABLED).write_bytes(b"")
+        Path(startup.ENABLED).unlink()
+        startup.enable()
+        self.assertEqual(Path("main.py").read_bytes(), expected)
+        self.assertEqual(Path(startup.BACKUP).read_bytes(), self.original)
+        self.assertTrue(Path(startup.ENABLED).exists())
+        self.assertFalse(Path(startup.DISABLED).exists())
+
+    def test_enable_refuses_modified_startup_or_orphaned_backup(self):
+        startup.install()
+        original_main = Path("main.py").read_bytes()
+        Path("main.py").write_bytes(original_main + b"# mentor modification\n")
+        Path(startup.DISABLED).write_bytes(b"")
+        with self.assertRaises(RuntimeError):
+            startup.enable()
+        self.assertTrue(Path(startup.DISABLED).exists())
+        Path("main.py").write_bytes(self.original)
+        with self.assertRaises(RuntimeError):
+            startup.enable()
+        self.assertEqual(Path("main.py").read_bytes(), self.original)
+
     def test_normal_start_has_escape_window_and_requires_handshake(self):
         startup.install()
         args = self.fixture()

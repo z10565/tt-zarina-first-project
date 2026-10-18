@@ -24,3 +24,6 @@ Implementation workers have finished; no worker retains a write claim. A future 
 
 Local evidence: no-packet motion expectation reproduced static state while real VGA ticks advance; valid packets resume enemy/player movement in top-level simulation. 21 board helper tests pass. Board demo physical test pending; user confirmed independent self-test animation only.
 
+
+2026-10-18 follow-up: user reports board_demo animates on real FPGA. /root owns fpga/standalone.py, fpga/test_standalone.py, docs/STANDALONE.md and WORKPLAN.md for verified re-enable operation and phone handoff; phone USB/handshake/power still awaiting observation. Prior diagnostic revision 40d87de passed test, FPGA, docs and GDS/precheck/gate-level workflows.
+

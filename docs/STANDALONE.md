@@ -1,5 +1,31 @@
 # Phone directly to ETR USB: opt-in standalone startup
 
+## Switch from the working board demo to phone controls
+
+On 2026-10-18 the user reported that the independent VGA animation and the Phone Flight UART demo both animate on the mentor's board. The phone-to-board USB connection, power and readiness exchange remain pending. Stop the demo with Ctrl-C. From the mentor's `tt-fpga` directory, using the diagnostic branch already checked out:
+
+```powershell
+git -C projects/tt-zarina-first-project pull --ff-only
+$Backup = "phone-board-backup-" + (Get-Date -Format "yyyyMMdd-HHmmss-fff")
+New-Item -ItemType Directory $Backup
+mpremote connect COM3 fs cp :main.py "$Backup/main.py"
+mpremote connect COM3 fs cp :config.ini "$Backup/config.ini"
+```
+
+Check both backups succeeded before continuing. Copy the helpers and explicitly enable startup:
+
+```powershell
+mpremote connect COM3 fs cp projects/tt-zarina-first-project/fpga/board_bridge.py :board_bridge.py
+mpremote connect COM3 fs cp projects/tt-zarina-first-project/fpga/standalone.py :standalone.py
+mpremote connect COM3 exec "import standalone; print(standalone.enable())"
+```
+
+Expect `Phone relay enabled`. `enable()` installs the existing reversible hook on first use, or re-enables a previously installed hook only when main.py exactly matches its saved backup plus our hook. It removes our diagnostic disable marker. Modified startup or orphaned backups cause a refusal; retain the error and inspect rather than deleting backups to force installation. config.ini, other images and firmware remain unchanged. This replaces only our two helper files; preserve mentor modifications if present. No new bitstream is needed after the working game demo.
+
+Disconnect board USB from the laptop and connect it to the phone with an OTG-capable data connection; this cold start runs the installed relay. Keep VGA attached. Leave FIRE released during normal startup. In RTU Motion choose **Connect ETR USB**, grant permission and tap Connect again if asked. Then **Start capture**, hold approximately face-up and still for one second, and tilt/rotate. The indicator becomes cyan when valid controls arrive; physical FIRE shoots. Use **Restart game** after game over. No four-second demo restart is active in phone mode.
+
+If it fails, record the app's exact direct-USB status (board not found, permission, waiting for readiness, or connected) and the VGA lamp color. Those distinguish USB enumeration/power from relay startup and sensor calibration. Do not treat a visible but paused game as proof that the phone connected. This transition still requires physical testing.
+
 This uses the purple ETR demo board and FabricFox FPGA simulator identified in the photos, with Tiny VGA on OUTPUT PMOD. The existing white TT.RUN.09 ASIC board cannot run a newly uploaded FPGA design. The phone is USB host through an OTG/data cable; the ETR management MCU's existing USB CDC interface receives bytes and forwards UART1 TX to FPGA ui3. No PC is needed during play after setup. Exact OTG compatibility, USB power budget, ETR firmware and hardware operation remain unverified.
 
 Use the Android build with **direct USB control**, not the older ADB-only stream. The existing PC/ADB bridge and temporary REPL launch remain available; opt-in installation below does not change their default configuration. The temporary `board_bridge.main()` accepts existing binary packets; the installed `standalone.start()` explicitly requests handshake gating.
