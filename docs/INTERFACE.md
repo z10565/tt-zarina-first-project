@@ -1,6 +1,6 @@
 # Flight game and interface specification
 
-Status: implementation contract for the isolated branch. Existing Android app has no flight mapping or live transport: it records independent TYPE_ACCELEROMETER m/s² (including gravity) and TYPE_GYROSCOPE rad/s with monotonic nanosecond timestamps. Preserve those raw records.
+Status: implementation contract. Android records independent TYPE_ACCELEROMETER m/s² (including gravity) and TYPE_GYROSCOPE rad/s with monotonic nanosecond timestamps. v0.3 adds standalone control mapping/USB host CDC while preserving those raw records; v0.2 PC ADB streaming remains available.
 
 ## Platform baseline
 
@@ -23,9 +23,9 @@ Single 25,200,000 Hz clock, VGA 640x480 with 800 clocks/line and 525 lines/frame
 - Parser abandons partial packet after four UART character times without a byte; resynchronizes on header. A malformed byte/CRC cannot partially update controls.
 - Host updates 30 Hz. If valid data stops, after 15 VGA ticks (~250 ms) link is stale. Movement/enemies/projectiles freeze and physical firing is inhibited. New valid packets resume. Invalid-control packet immediately marks link stale. No host fire command exists.
 
-## Preprocessing (host)
+## Preprocessing (Android or PC host)
 
-Phone -> USB ADB forwarded local TCP JSONL -> PC host -> USB-UART / board UART -> chip. No Bluetooth/Wi-Fi/USB peripheral is implemented in silicon. Exact attached serial hardware is unknown, so physical wiring remains conditional and must be verified before powering.
+Standalone: phone preprocessing -> Android USB host CDC -> ETR management relay -> UART ui3. PC alternative: phone -> ADB local TCP JSONL -> PC preprocessing -> ETR USB relay -> UART ui3. Both implement the same control mapping below. No Bluetooth/Wi-Fi/USB peripheral is implemented in silicon. USB-host roles, readiness handshake and reversible startup are documented in [STANDALONE.md](STANDALONE.md); physical compatibility/power remains unverified.
 
 Hold phone approximately face-up and stationary for initial calibration. Host estimates accelerometer neutral and gyroscope bias for one second; resets calibration on a new capture session. Low-pass acceleration, subtract neutral; positive X moves right, positive Y moves up (negative screen dy). Acceleration dead zone 0.6 m/s², saturation 4.5 m/s², quantize to -3..3. Integrate bias-corrected gyro Z with 0.06 rad/s dead zone, clamp relative aim angle to +/-0.65 rad, choose five cannon directions; neutral=2. Bound integration dt and mark controls invalid when either sensor is stale. Bridge docs/tests specify exact quantization and thresholds. Recalibration resets aim neutral. No ML.
 

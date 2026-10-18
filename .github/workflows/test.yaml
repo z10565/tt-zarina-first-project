@@ -26,6 +26,9 @@ jobs:
       - name: Bridge unit tests
         run: python -m unittest discover -s bridge/tests -v
 
+      - name: Board relay and standalone startup tests
+        run: python -m unittest discover -s fpga -p 'test*.py' -v
+
       - name: RTL and integration checks
         run: bash scripts/run_checks.sh
 

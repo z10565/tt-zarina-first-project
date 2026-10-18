@@ -1,5 +1,7 @@
 # Test first on the ETR FPGA simulator
 
+For phone-only play after one-time PC setup, use [standalone USB setup](STANDALONE.md). The procedure below describes the retained PC/ADB alternative.
+
 Photos identify two different systems: the white TinyTapeout06+ demoboard carries an existing TT.RUN.09 ASIC, which cannot receive our new logic; the purple ETR demoboard with FPGA ASIC simulator is the FPGA target. Tiny VGA v1.2 and the AOC VGA monitor provide the display. Audio PMOD is unused. Confirm the FPGA daughterboard revision and firmware before programming: these are visual identifications, not electrical validation.
 
 The [official simulator guide](https://tinytapeout.com/guides/fpga-breakout/) distinguishes classic and ETR FabricFox constraints. Our official ICE40 workflow pins [support tools 01d5d2814fa9dd61e9d211e0b235a4a592a9316a](https://github.com/TinyTapeout/tt-support-tools/tree/01d5d2814fa9dd61e9d211e0b235a4a592a9316a), whose default fabricfox target uses `tt_fpga_fabricfoxv2.pcf`. Do not load this artifact on an unidentified or classic simulator.
